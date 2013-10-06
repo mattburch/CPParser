@@ -240,11 +240,11 @@ sub gateway_data {
 		'main_ip'	=>	$ref->{'ipaddr'},
 		'comments'	=>	$ref->{'comments'},
 		'enc_uid'	=>	$ref->{'manual_encdomain'}->{'Uid'},
-		'enc_grp'	=>	$ref->{'manual_encdomain'}->{'Name'}
+		'enc_grp'	=>	$ref->{'manual_encdomain'}->{'Name'},
 	);
+	
 	foreach my $i (keys %{$ref->{'interfaces'}}) {
 		%{$data{'interfaces'}{$i}} = (
-			'uid' 			=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'allowed'}->{'Uid'},
 			'ifname'		=>	$ref->{'interfaces'}->{$i}->{'officialname'},
 			'ipaddr'		=>	$ref->{'interfaces'}->{$i}->{'ipaddr'},
 			'netmask'		=>	$ref->{'interfaces'}->{$i}->{'netmask'},
@@ -252,7 +252,8 @@ sub gateway_data {
 			'spoof_type'	=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'access'},
 			'dmz_net'		=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'dmz'},
 			'wan_net'		=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'leads_to_internet'},
-			'netaccess'		=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'allowed'}->{'Name'}
+			'netaccess'		=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'allowed'}->{'Name'},
+			'uid' 			=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'allowed'}->{'Uid'}
 		);
 	}
 	
@@ -430,25 +431,6 @@ sub uidindex {
 	return %index;
 }
 
-#
-# Reindex Database objects based on IP_Address value
-# NOTE: Needs updating to support Network Objects / IP Ranges
-#
-#sub ipindex {
-#	my $ref = shift;
-#	my %index;
-#	
-#	#if (ref $ref ne 'REF') { die "Error: uiddex() requires $ref of ref type REF\n"; }
-#	
-#	foreach my $i ( keys %{$ref} ) {
-#		unless ( exists $index{$ref->{$i}->{'ipaddr'}} ) {
-#			$index{$ref->{$i}->{'ipaddr'}} = \$ref->{$i};
-#		}
-#	}
-#	
-#	return %index;
-#}
-
 sub newmember {
 	my %orggrp = group_data(shift);
 	my %newgrp = group_data(shift);
@@ -603,23 +585,6 @@ sub validate {
 				my (%newgrp, %orggrp);
 				%newgrp = get_data(\$refimp->{$import},$option);
 				%orggrp = get_data(\$reforg->{$import},$option);
-								
-				#
-				# Debug options to print full group contents
-				#
-				# if ( scalar(keys %{$orggrp{'members'}}) < scalar(keys %{$newgrp{'members'}}) ) {
-					# %{$objects{'diff-grp'}{$import}{'org'}} = %orggrp;
-					# %{$objects{'diff-grp'}{$import}{'new'}} = %newgrp;
-				# } else {
-					# foreach my $i (keys %{$newgrp{'members'}}) {
-						# if ($orggrp{'members'}{$i} &&
-						# compare($newgrp{'members'}{$i}{'name'},$orggrp{'members'}{$i}{'name'})) {
-							# %{$objects{'diff-grp'}{$import}{'org'}} = %orggrp;
-							# %{$objects{'diff-grp'}{$import}{'new'}} = %newgrp;
-						# }
-					# }
-				# }
-				
 				
 				foreach my $i (keys %{$newgrp{'members'}}) {
 					my $count=1;
@@ -701,12 +666,13 @@ sub data_parser {
 				$setting = '';
 				$null = 1;
 			}
-			
-			#identify $name settings
+			#
+			# identify setting value for $name
+			# if () setting set to undef
 			if ($_ =~ /\)(?!\")/) { 
 				if ($_ =~ /\((.*?)\)/) { 
-					$setting = $1;
- 					#$setting =~ s/["\}\{]//g;
+					if ($1 eq '') { $setting = undef; }
+					else { $setting = $1; }
 				}
 				else { $setting = 'NULL'; }
 			}
@@ -725,7 +691,7 @@ sub data_parser {
 				}
 				unless ($name) { $name = $setting; }
 			}
-			unless ( defined $setting ){ $setting = 'HEAD'; }
+			#unless ( defined $setting ){ $setting = 'HEAD'; }
 			
 			#identified NULL values
 			unless (defined $name) { $name = "$header[$#header]_$setting"; }
@@ -765,30 +731,40 @@ sub data_parser {
 	return (\%database);
 }
 
+#############################
+# Main subroutine calls to execute script fuctions
+#############################
+# Read and parse a object_5_0.C file
 sub object_parser {
 	return data_parser(@_,'object');
 }
 
+# Read and parse a policy.pf file
 sub policy_parser {
 	return data_parser(@_,'policy');
 }
 
+# Read and parse a netconf.C file
 sub netconf_parser {
 	return data_parser(@_,'netconf');
 }
 
+# Dump default object settings for an object HASH
 sub get_object {
 	return get_data(@_,'object');
 }
 
+# Dump default service settings for an service HASH
 sub get_service {
 	return get_data(@_,'service');
 }
 
+# Compare two object HASH references
 sub compare_obj {
 	return validate($_[0],$_[1],'object');
 }
 
+# Compare two service HASH references
 sub compare_service {
 	return validate($_[0],$_[1],'service');
 }
@@ -800,3 +776,4 @@ sub update_database_obj {
 sub update_database_srv {
 	return dataupdate($_[0],$_[1],'service');
 }
+
