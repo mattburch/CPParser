@@ -775,3 +775,11 @@ sub update_database_obj {
 sub update_database_srv {
 	return dataupdate($_[0],$_[1],'service');
 }
+
+sub object_filler {
+	filler (@_,'network_objects');
+}
+
+sub service_filler {
+	filler (@_,'services');
+}
