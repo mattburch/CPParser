@@ -252,8 +252,8 @@ sub gateway_data {
 			'spoof_type'	=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'access'},
 			'dmz_net'		=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'dmz'},
 			'wan_net'		=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'leads_to_internet'},
-			'netaccess'		=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'allowed'}->{'Name'},
-			'uid' 			=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'allowed'}->{'Uid'}
+			'netaccess'		=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'allowed'}->{'Name'} || $ref->{'interfaces'}->{$i}->{'netaccess'}->{'OBJREF1'}->{'Name'},
+			'uid' 			=>	$ref->{'interfaces'}->{$i}->{'netaccess'}->{'allowed'}->{'Uid'} || $ref->{'interfaces'}->{$i}->{'netaccess'}->{'OBJREF1'}->{'Uid'}
 		);
 	}
 	
@@ -714,7 +714,7 @@ sub data_parser {
 		
 			# set $objref = 0 if group object is parsed
 			if ($header[$#header]) {
-				if ($header[$#header-1][1] =~ /network_objects|services|routes|conns/ ) { 
+				if ($header[$#header-1][1] =~ /network_objects|services|interfaces|routes|conns/ ) { 
 					$objref = 0; 
 				}
 			}
@@ -775,4 +775,3 @@ sub update_database_obj {
 sub update_database_srv {
 	return dataupdate($_[0],$_[1],'service');
 }
-
