@@ -671,8 +671,7 @@ sub data_parser {
 			# if () setting set to undef
 			if ($_ =~ /\)(?!\")/) { 
 				if ($_ =~ /\((.*?)\)/) { 
-					if ($1 eq '') { $setting = undef; }
-					else { $setting = $1; }
+					$setting = ($1 eq '') ? undef : $1;
 				}
 				else { $setting = 'NULL'; }
 			}
