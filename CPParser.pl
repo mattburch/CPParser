@@ -735,51 +735,59 @@ sub data_parser {
 #############################
 # Read and parse a object_5_0.C file
 sub object_parser {
-	return data_parser(@_,'object');
+	return data_parser($_[0],'object');
 }
 
 # Read and parse a policy.pf file
 sub policy_parser {
-	return data_parser(@_,'policy');
+	return data_parser($_[0],'policy');
 }
 
 # Read and parse a netconf.C file
 sub netconf_parser {
-	return data_parser(@_,'netconf');
+	return data_parser($_[0],'netconf');
 }
 
 # Dump default object settings for an object HASH
 sub get_object {
-	return get_data(@_,'object');
+	return get_data($_[0],'object');
 }
 
 # Dump default service settings for an service HASH
 sub get_service {
-	return get_data(@_,'service');
+	return get_data($_[0],'service');
 }
 
 # Compare two object HASH references
+# $_[0] is original database $_[1] is new database file
 sub compare_obj {
 	return validate($_[0],$_[1],'object');
 }
 
 # Compare two service HASH references
+# $_[0] is original database $_[1] is new database file
 sub compare_service {
 	return validate($_[0],$_[1],'service');
 }
 
+# VM database comparison were UIDs will be the same
+# $_[0] is original database $_[1] is new database file
 sub update_database_obj {
 	return dataupdate($_[0],$_[1],'object');
 }
 
+# VM database comparison were UIDs will be the same
+# $_[0] is original database $_[1] is new database file
 sub update_database_srv {
 	return dataupdate($_[0],$_[1],'service');
 }
 
+# Export Dbedit commands to update and add new objects
 sub object_filler {
-	filler (@_,'network_objects');
+	filler ($_[0],'network_objects');
 }
 
+# Export Dbedit commands to update and add new objects
 sub service_filler {
-	filler (@_,'services');
+	filler ($_[0],'services');
 }
