@@ -1,7 +1,7 @@
 #! C:\perl\bin\perl
 use strict;
 use warnings;
-no autovivification;
+#no autovivification;
 #no autovivification qw(exists store delete fetch strict); #kill if vivification
 
 #
