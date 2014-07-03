@@ -6,7 +6,7 @@ CPParser
 CPParser is a PERL framework designed to parse through and extract element details from the Check Point objects_5_0.C, policy.pf and netconf.C configuration files. The specific purpose of this framework is to provide similar functionality to [Ofiller and Odumper](http://www.cpshared.com/forums/files/ofiller_v2.4.tgz) but has the ability to parse the entire configuration file within a HASH object structure.
 
 ##CPPaser Functions##
-
+````
 object_parser('FileName')     # Parses object_5_0.C <FileName> and returns HASH reference
 policy_parser('FileName')     # Parses policy.pf <FileName> and returns HASH reference
 netconf_parser('FileName')    # Parses netconf.C <FileName> and returns HASH reference
@@ -15,6 +15,7 @@ get_service(HASH)             # Takes ref HASH and returns ref HASH default data
 data_dump(HASH)               # Takes ref HASH and performs data_dumper
 object_filler(HASH)           # Takes ref HASH and exports DBedit commands to create / update network objects
 service_filler(HASH)          # Takes ref HASH and exports DBedit commands to create / update service objects
+````
 
 ##Default Object HASH Structure##
 
